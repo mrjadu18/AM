@@ -1,0 +1,11 @@
+import { Router } from 'express';
+import { authenticate } from '../middleware/auth.middleware.js';
+import * as customersController from '../controllers/customers.controller.js';
+const router = Router();
+router.get('/', authenticate, customersController.getCustomers);
+router.get('/:id', authenticate, customersController.getCustomerById);
+router.post('/', authenticate, customersController.createCustomer);
+router.patch('/:id', authenticate, customersController.updateCustomer);
+router.patch('/:id/status', authenticate, customersController.updateCustomerStatus);
+router.delete('/:id', authenticate, customersController.deleteCustomer);
+export default router;

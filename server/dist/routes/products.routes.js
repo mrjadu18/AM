@@ -1,0 +1,17 @@
+import { Router } from 'express';
+import { authenticate } from '../middleware/auth.middleware.js';
+import { requirePermission } from '../middleware/permission.middleware.js';
+import { PERMISSIONS } from '../config/permissions.js';
+import * as productsController from '../controllers/products.controller.js';
+import { upload } from '../middleware/upload.middleware.js';
+const router = Router();
+router.get('/', authenticate, requirePermission(PERMISSIONS.PRODUCTS_VIEW), productsController.getProducts);
+router.get('/:id', authenticate, requirePermission(PERMISSIONS.PRODUCTS_VIEW), productsController.getProductById);
+router.post('/', authenticate, requirePermission(PERMISSIONS.PRODUCTS_CREATE, PERMISSIONS.PRODUCTS_MANAGE), productsController.createProduct);
+router.post('/:id/attachments', authenticate, requirePermission(PERMISSIONS.PRODUCTS_UPDATE, PERMISSIONS.PRODUCTS_MANAGE), upload.fields([{ name: 'photos', maxCount: 10 }, { name: 'installationGuide', maxCount: 1 }]), productsController.uploadProductAssets);
+router.get('/:id/attachments/:fileId', authenticate, requirePermission(PERMISSIONS.PRODUCTS_VIEW), productsController.downloadProductAsset);
+router.delete('/:id/attachments/:fileId', authenticate, requirePermission(PERMISSIONS.PRODUCTS_UPDATE, PERMISSIONS.PRODUCTS_MANAGE), productsController.removeProductAsset);
+router.patch('/:id', authenticate, requirePermission(PERMISSIONS.PRODUCTS_UPDATE, PERMISSIONS.PRODUCTS_MANAGE), productsController.updateProduct);
+router.patch('/:id/status', authenticate, requirePermission(PERMISSIONS.PRODUCTS_UPDATE, PERMISSIONS.PRODUCTS_MANAGE), productsController.updateProductStatus);
+router.delete('/:id', authenticate, requirePermission(PERMISSIONS.PRODUCTS_DELETE, PERMISSIONS.PRODUCTS_MANAGE), productsController.deleteProduct);
+export default router;

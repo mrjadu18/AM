@@ -1,0 +1,14 @@
+import { Router } from 'express';
+import { authenticate } from '../middleware/auth.middleware.js';
+import { requirePermission } from '../middleware/permission.middleware.js';
+import { PERMISSIONS } from '../config/permissions.js';
+import * as permissionsController from '../controllers/permissions.controller.js';
+const router = Router();
+router.get('/available', authenticate, permissionsController.getAvailablePermissions);
+router.get('/roles', authenticate, requirePermission(PERMISSIONS.ROLES_VIEW, PERMISSIONS.PERMISSIONS_VIEW), permissionsController.getRoles);
+router.get('/roles/:id', authenticate, requirePermission(PERMISSIONS.ROLES_VIEW), permissionsController.getRoleById);
+router.post('/roles', authenticate, requirePermission(PERMISSIONS.ROLES_CREATE), permissionsController.createRole);
+router.post('/roles/:id/duplicate', authenticate, requirePermission(PERMISSIONS.ROLES_CREATE), permissionsController.duplicateRole);
+router.patch('/roles/:id', authenticate, requirePermission(PERMISSIONS.ROLES_UPDATE), permissionsController.updateRole);
+router.delete('/roles/:id', authenticate, requirePermission(PERMISSIONS.ROLES_DELETE), permissionsController.deleteRole);
+export default router;
